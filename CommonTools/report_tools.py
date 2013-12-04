@@ -181,7 +181,7 @@ if __name__ == '__main__':
         print 'python report_tools.py 2013-04-16 chinchinstyle'
         exit(0)
     nick = str(sys.argv[2])
-    file_name = '/home/zhoujiebing/Analysis/DataAnalysis/data/report_data/syb_report'+\
+    file_name = os.path.join(os.path.dirname(__file__),'../DataAnalysis/data/report_data/syb_report/') + \
             str(sys.argv[1])+'.csv'
     Report.parser_nick_report(file_name, nick)
 

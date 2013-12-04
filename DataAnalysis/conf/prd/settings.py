@@ -29,7 +29,8 @@ def set_soft_code(soft_code):
     from Analysis.conf import set_env
     set_env.getEnvReady(SOFT_CODE_SETTING)
     
-CURRENT_DIR = '/home/zhoujiebing/Analysis/DataAnalysis/'
+CURRENT_DIR = os.path.join(os.path.dirname(__file__),'../'))
+
 logger = logging.getLogger("DataAnalysis")
 hdlr = logging.FileHandler(CURRENT_DIR+'data/report_log')
 hdlr.setLevel(logging.INFO)
@@ -49,23 +50,23 @@ if pymongo.version.startswith("2.5"):
 #MONGODB SETTINGS
 MGDBS = {
         'syb1':{
-            'HOST':'192.168.10.246',
+            'HOST':'mm_246',
             'PORT':2010,
         },
         'syb2':{
-            'HOST':'192.168.10.243',
+            'HOST':'mm_243',
             'PORT':2010,
         },
         'bd':{
-            'HOST':'xcw.maimiaotech.com',
+            'HOST':'mm_242',
             'PORT':27017,
         },
         'bd1':{
-            'HOST':'223.5.20.242',
+            'HOST':'mm_242',
             'PORT':27017,
         },
         'bd2':{
-            'HOST':'223.5.20.254',
+            'HOST':'mm_254',
             'PORT':27018,
         },
     }
