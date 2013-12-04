@@ -9,6 +9,8 @@
 @copyright: Copyright maimiaotech.com
 
 """
+import os
+
 REPORT_KEYS = [
         ['nick', str], 
         ['campaign', str],
