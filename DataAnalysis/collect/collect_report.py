@@ -56,13 +56,13 @@ class CollectReport:
                 syb_user[nick] = 15
         return syb_user
 
-    def collect_report(self):
+    def collect_report(self, shop_num=1000):
         """搜集报表数据"""
 
         start_date = self.today - datetime.timedelta(days=1)
         end_date = start_date
         logger.info('start collect report')
-        for shop in self.shop_list:
+        for shop in self.shop_list[:shop_num]:
             logger.info('正在抓取帐号 %s 的报表信息' % shop['nick'])
             try:
                 shop_report = RptSumSearchService.cust_rpt_sum_search(shop['nick'], shop['sid'], start_date, end_date,\
@@ -208,10 +208,10 @@ def collect_report_script():
     today = datetime.date.today()
     try:
         syb_obj = CollectSYBReport(today)
-        syb_obj.collect_report()
+        syb_obj.collect_report(200000)
         syb_obj.write_report()
         bd_obj = CollectBDReport(today)
-        bd_obj.collect_report()
+        bd_obj.collect_report(20000)
         bd_obj.write_report()
     
     except Exception,e:

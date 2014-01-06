@@ -34,15 +34,26 @@ def analysis_campaign(syb_file, bd_file):
 
 def analysis_campaign_script():
     today = str(datetime.date.today())
+    yesterday = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     syb_file = CURRENT_DIR+'data/report_data/syb_report' + today + '.csv'
     bd_file = CURRENT_DIR+'data/report_data/bd_report' + today + '.csv'
-    if not os.path.exists(syb_file):
+    syb_file_yes = CURRENT_DIR+'data/report_data/syb_report' + yesterday + '.csv'
+    bd_file_yes = CURRENT_DIR+'data/report_data/bd_report' + yesterday + '.csv'
+    if not os.path.exists(syb_file) and not os.path.exists(syb_file_yes):
         logger.error('analysis_campaign error: %s not exists ' % (syb_file))
         return None
+
+    syb_file_use = syb_file
+    bd_file_use = bd_file
+    if not os.path.exists(syb_file) and os.path.exists(syb_file_yes):
+        syb_file_use = syb_file_yes
+        bd_file_use = bd_file_yes 
     try:
-        content = analysis_campaign(syb_file, bd_file)
+        content = analysis_campaign(syb_file_use, bd_file_use)
         #send_email_with_text(DIRECTOR['EMAIL'], content, today+'_产品报表日常分析')
         send_email_with_text('product@maimiaotech.com', content, today+'_产品报表日常分析')
+        send_email_with_text('xuyaoqiang@maimiaotech.com', content, today+'_产品报表日常分析')
+        #send_email_with_text('chenke@maimiaotech.com', content, today+'_产品报表日常分析')
 
     except Exception,e:
         logger.exception('analysis_campaign error: %s' % (str(e)))

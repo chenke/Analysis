@@ -80,6 +80,10 @@ def analysis_campaign_simple(file_name):
         result = soft_statistics_dict[key]
         if result.count <= 0:
             continue
+        result.sum_cost += 0.001
+        result.sum_click += 0.001
+        result.sum_day_cost += 0.001
+
         content += key + '如下所有指标都是针对计划的\n'
         content += '有效数(多天花费不为0)：%d, 无效数(多天花费为0数)：%d\n' % (result.count, result.unnormal_count)
         content += '有效用户的昨日 平均花费：%.1f, 平均成交额：%.1f, 平均ROI：%.1f, 平均CPC：%.1f\n' % \

@@ -41,8 +41,7 @@ class AnalysisCampaign:
             if campaign['campaign'] == '账户整体情况':
                 shop = campaign
                 continue
-            flag1 = "其他计划(省油宝)" in campaign_name and \
-                    campaign['campaign'] not in ["省油宝长尾计划","省油宝加力计划","北斗专属计划"]
+	    flag1 = u"其他计划(省油宝)" in campaign_name and "省油宝长尾" not in campaign['campaign'] and "省油宝加力" not in campaign['campaign'] and "北斗专属计划" not in campaign['campaign']
             flag2 = campaign['campaign'].find(campaign_name) != -1 and "其他计划(省油宝)" not in campaign['campaign']
 
             if flag1 or flag2:
@@ -147,10 +146,11 @@ class AnalysisCampaign:
         zero_pv = 0
         multi_zero_pv = 0
         
-        multi_roi_zero = 0
+        multi_roi_zero = 0 
         multi_roi_unzero = 0
         multi_roi_bigger_2 = 0
         
+	nick_set = set()
         sum_key_dict = {}
         main_keys = ['multi_cost_percent', 'multi_pay_percent']
         for key in MAIN_KEYS:
@@ -184,7 +184,10 @@ class AnalysisCampaign:
                 avg_click_lower_20 += 1
             
             for key in main_keys:
+		if "shop" in key and campaign["nick"].encode("utf-8")  in nick_set:
+		continue
                 sum_key_dict[key] += campaign[key]
+	    nick_set.add(campaign["nick"])
             for key in daily_keys:
                 sum_key_dict['daily_'+key] += float(campaign[key]) / campaign['count_days']
             
@@ -200,9 +203,9 @@ class AnalysisCampaign:
                 if campaign['multi_roi'] >= 2:
                     multi_roi_bigger_2 += 1
         
-        campaign_num = len(self.campaign_list) - cancel_num
-        unzero_pv = campaign_num - zero_pv
-        multi_unzero_pv = campaign_num - multi_zero_pv
+        campaign_num = len(self.campaign_list) - cancel_num + 0.000001
+        unzero_pv = campaign_num - zero_pv + 0.000000001
+        multi_unzero_pv = campaign_num - multi_zero_pv + 0.000000001
         
         content = '**********'+campaign_name + ' 分析**********\n'
         content += '总计划数量：%d, 停用数量：%d\n' % (campaign_num, cancel_num)
@@ -212,13 +215,13 @@ class AnalysisCampaign:
         content += '昨日 平均花费：%.1f, 平均成交额：%.1f, 平均ROI：%.1f, 平均转化率：%.3f\n' % (\
                 sum_key_dict['cost'] / unzero_pv / 100, \
                 sum_key_dict['pay'] / unzero_pv / 100, \
-                sum_key_dict['pay'] / sum_key_dict['cost'], \
+                sum_key_dict['pay'] / (sum_key_dict['cost']+0.001), \
                 sum_key_dict['pay_count'] / (sum_key_dict['click']+0.01))
 
         content += '昨日 平均展现：%d, 平均点击：%d, 平均CPC：%.1f, 平均点击率：%.3f,\n' % (\
                 sum_key_dict['pv'] / unzero_pv, \
                 sum_key_dict['click'] / unzero_pv, \
-                sum_key_dict['cost'] / sum_key_dict['click'] / 100, \
+                sum_key_dict['cost'] / (sum_key_dict['click']+0.001) / 100, \
                 sum_key_dict['click'] / (sum_key_dict['pv']+0.01))
         
         content += '昨日 点击少于20 数：%d, 占比：%.3f\n' % (click_lower_20, \
@@ -230,13 +233,13 @@ class AnalysisCampaign:
         content += '日均 花费：%.1f, 日均成交额：%.1f, 日均ROI：%.1f, 日均转化率：%.3f\n' % (\
                 sum_key_dict['daily_multi_cost'] / multi_unzero_pv / 100, \
                 sum_key_dict['daily_multi_pay'] / multi_unzero_pv / 100, \
-                sum_key_dict['daily_multi_pay'] / sum_key_dict['daily_multi_cost'],\
+                sum_key_dict['daily_multi_pay'] / (sum_key_dict['daily_multi_cost']+0.001),\
                 sum_key_dict['daily_multi_pay_count'] / (sum_key_dict['daily_multi_click']+0.01))
 
         content += '日均 展现：%d, 日均点击：%d, 日均CPC：%.1f, 日均点击率：%.3f, \n' % (\
                 sum_key_dict['daily_multi_pv'] / multi_unzero_pv, \
                 sum_key_dict['daily_multi_click'] / multi_unzero_pv, \
-                sum_key_dict['daily_multi_cost'] / sum_key_dict['daily_multi_click'] / 100, \
+                sum_key_dict['daily_multi_cost'] / (sum_key_dict['daily_multi_click']+0.01) / 100, \
                 sum_key_dict['daily_multi_click'] / (sum_key_dict['daily_multi_pv']+0.01))
         
         content += '日均 点击少于20 数量：%d, 占比：%.3f\n' % (avg_click_lower_20, \
@@ -251,8 +254,8 @@ class AnalysisCampaign:
                 float(multi_cost_percent_bigger_9) / multi_unzero_pv, \
                 float(multi_cost_percent_bigger_5) / multi_unzero_pv)
         content += '所有计划多天花费占所有全店多天 花费的比例：%.2f,所有计划多天成交占所有全店多天成交的比例：%.2f\n\n' % \
-                (sum_key_dict['multi_cost'] / sum_key_dict['shop_multi_cost'],\
-                sum_key_dict['multi_pay'] / sum_key_dict['shop_multi_pay'])
+                (sum_key_dict['multi_cost'] / (sum_key_dict['shop_multi_cost']+0.001),\
+                sum_key_dict['multi_pay'] / (sum_key_dict['shop_multi_pay']+0.001))
        
         return content
 
